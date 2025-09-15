@@ -66,7 +66,6 @@
   </div>
 
 <script>
-// --------- Dados (pode substituir por fetch de um endpoint/CSV) ---------
 const rawData = [
   {"Banco":"Inter","Renda Fixa":320,"Ações":180,"FIIs":95,"Câmbio":60,"ESG":40,"Crédito":210},
   {"Banco":"Nubank","Renda Fixa":280,"Ações":220,"FIIs":110,"Câmbio":45,"ESG":55,"Crédito":190},
@@ -81,38 +80,31 @@ const rawData = [
 ];
 
 
-// Utilidades
 const metrics = ["Renda Fixa","Ações","FIIs","Câmbio","ESG","Crédito"];
 function totalRow(r){ return metrics.reduce((s,m)=>s+(+r[m]||0),0); }
 
-// Estado
 let metric = "Renda Fixa";
 let sortDir = "desc";
 let search = "";
 
-// DOM
 const metricSelect = document.getElementById("metricSelect");
 const sortSelect = document.getElementById("sortSelect");
 const searchInput = document.getElementById("searchInput");
 const tableBody = document.querySelector("#dataTable tbody");
 
-// Eventos
 metricSelect.addEventListener("change", e => { metric = e.target.value; render(); });
 sortSelect.addEventListener("change", e => { sortDir = e.target.value; render(); });
 searchInput.addEventListener("input", e => { search = e.target.value.toLowerCase(); render(); });
 
-// Preparação de gráficos
 const barCtx = document.getElementById('barChart').getContext('2d');
 const pieCtx = document.getElementById('pieChart').getContext('2d');
 let barChart, pieChart;
 
 function render(){
-  // Filtra e ordena
   let rows = rawData
     .filter(r => r["Banco"].toLowerCase().includes(search))
     .sort((a,b)=> sortDir === "asc" ? (+a[metric]) - (+b[metric]) : (+b[metric]) - (+a[metric]));
 
-  // TABELA
   tableBody.innerHTML = "";
   rows.forEach(r => {
     const tr = document.createElement("tr");
@@ -130,7 +122,6 @@ function render(){
     tableBody.appendChild(tr);
   });
 
-  // BAR CHART
   const labels = rows.map(r=>r["Banco"]);
   const dataBar = rows.map(r=>r[metric]);
   if(barChart) barChart.destroy();
@@ -154,7 +145,6 @@ function render(){
     }
   });
 
-  // PIE CHART — soma por classe (toda a carteira)
   const sumByMetric = metrics.map(m => rows.reduce((s,r)=>s+(+r[m]||0),0));
   if(pieChart) pieChart.destroy();
   pieChart = new Chart(pieCtx, {

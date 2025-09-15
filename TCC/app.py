@@ -7,7 +7,9 @@ st.set_page_config(page_title="Bancos & Investimentos", layout="wide")
 st.title("🏦 Dashboard — Bancos & Investimentos")
 st.caption("Dados fictícios para demonstração • Substitua o CSV pelos seus dados")
 
-df = pd.read_csv("bancos_investimentos.csv")
+import os
+filepath = os.path.join(os.path.dirname(__file__), "bancos_investimentos.csv")
+df = pd.read_csv(filepath)
 
 metrics = ["Renda Fixa","Ações","FIIs","Câmbio","ESG","Crédito"]
 df["Total"] = df[metrics].sum(axis=1)
