@@ -1,0 +1,166 @@
+
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard — Bancos & Investimentos</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="title">🏦 Dashboard • Bancos & Investimentos <span class="badge">Demo</span></div>
+      <div class="controls">
+        <select id="metricSelect" class="select" aria-label="Métrica">
+          <option value="Renda Fixa">Renda Fixa</option>
+          <option value="Ações">Ações</option>
+          <option value="FIIs">FIIs</option>
+          <option value="Câmbio">Câmbio</option>
+          <option value="ESG">ESG</option>
+          <option value="Crédito">Crédito</option>
+        </select>
+        <select id="sortSelect" class="select" aria-label="Ordenação">
+          <option value="desc">Maior → menor</option>
+          <option value="asc">Menor → maior</option>
+        </select>
+        <input id="searchInput" class="input" placeholder="Pesquisar banco..." />
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card span-8">
+        <h3>Comparativo por Banco (barra)</h3>
+        <canvas id="barChart"></canvas>
+      </div>
+      <div class="card span-4">
+        <h3>Participação por Classe (pizza)</h3>
+        <canvas id="pieChart"></canvas>
+      </div>
+
+      <div class="card span-12">
+        <h3>Tabela — Distribuição por Banco (em milhões)</h3>
+        <table class="table" id="dataTable">
+          <thead>
+            <tr>
+              <th>Banco</th>
+              <th>Renda Fixa</th>
+              <th>Ações</th>
+              <th>FIIs</th>
+              <th>Câmbio</th>
+              <th>ESG</th>
+              <th>Crédito</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">
+      *Dados fictícios apenas para demonstração. Personalize com seus números (CSV incluso).
+    </div>
+  </div>
+
+<script>
+const rawData = [
+  {"Banco":"Inter","Renda Fixa":320,"Ações":180,"FIIs":95,"Câmbio":60,"ESG":40,"Crédito":210},
+  {"Banco":"Nubank","Renda Fixa":280,"Ações":220,"FIIs":110,"Câmbio":45,"ESG":55,"Crédito":190},
+  {"Banco":"C6 Bank","Renda Fixa":350,"Ações":150,"FIIs":80,"Câmbio":70,"ESG":65,"Crédito":230},
+  {"Banco":"PicPay","Renda Fixa":300,"Ações":200,"FIIs":120,"Câmbio":50,"ESG":35,"Crédito":175},
+  {"Banco":"PayPal","Renda Fixa":278,"Ações":145,"FIIs":107,"Câmbio":63,"ESG":50,"Crédito":239},
+  {"Banco":"PagBank","Renda Fixa":379,"Ações":235,"FIIs":103,"Câmbio":65,"ESG":62,"Crédito":197},
+  {"Banco":"BTG Pactual","Renda Fixa":289,"Ações":200,"FIIs":89,"Câmbio":70,"ESG":33,"Crédito":214},
+  {"Banco":"Next","Renda Fixa":305,"Ações":176,"FIIs":74,"Câmbio":79,"ESG":57,"Crédito":193},
+  {"Banco":"Neon","Renda Fixa":382,"Ações":183,"FIIs":133,"Câmbio":63,"ESG":40,"Crédito":222},
+  {"Banco":"Sofisa Direto","Renda Fixa":321,"Ações":248,"FIIs":98,"Câmbio":49,"ESG":29,"Crédito":158}
+];
+
+
+const metrics = ["Renda Fixa","Ações","FIIs","Câmbio","ESG","Crédito"];
+function totalRow(r){ return metrics.reduce((s,m)=>s+(+r[m]||0),0); }
+
+let metric = "Renda Fixa";
+let sortDir = "desc";
+let search = "";
+
+const metricSelect = document.getElementById("metricSelect");
+const sortSelect = document.getElementById("sortSelect");
+const searchInput = document.getElementById("searchInput");
+const tableBody = document.querySelector("#dataTable tbody");
+
+metricSelect.addEventListener("change", e => { metric = e.target.value; render(); });
+sortSelect.addEventListener("change", e => { sortDir = e.target.value; render(); });
+searchInput.addEventListener("input", e => { search = e.target.value.toLowerCase(); render(); });
+
+const barCtx = document.getElementById('barChart').getContext('2d');
+const pieCtx = document.getElementById('pieChart').getContext('2d');
+let barChart, pieChart;
+
+function render(){
+  let rows = rawData
+    .filter(r => r["Banco"].toLowerCase().includes(search))
+    .sort((a,b)=> sortDir === "asc" ? (+a[metric]) - (+b[metric]) : (+b[metric]) - (+a[metric]));
+
+  tableBody.innerHTML = "";
+  rows.forEach(r => {
+    const tr = document.createElement("tr");
+    const t = totalRow(r);
+    tr.innerHTML = `
+      <td><strong>${r["Banco"]}</strong></td>
+      <td>${r["Renda Fixa"]}</td>
+      <td>${r["Ações"]}</td>
+      <td>${r["FIIs"]}</td>
+      <td>${r["Câmbio"]}</td>
+      <td>${r["ESG"]}</td>
+      <td>${r["Crédito"]}</td>
+      <td><strong>${t}</strong></td>
+    `;
+    tableBody.appendChild(tr);
+  });
+
+  const labels = rows.map(r=>r["Banco"]);
+  const dataBar = rows.map(r=>r[metric]);
+  if(barChart) barChart.destroy();
+  barChart = new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: metric, data: dataBar }]
+    },
+    options: {
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{ display:false },
+        tooltip:{ mode:'index', intersect:false }
+      },
+      scales:{
+        x:{ ticks:{ color:'#cbd5e1' }, grid:{ display:false } },
+        y:{ ticks:{ color:'#94a3b8' }, grid:{ color:'rgba(148,163,184,.15)' } }
+      }
+    }
+  });
+
+  const sumByMetric = metrics.map(m => rows.reduce((s,r)=>s+(+r[m]||0),0));
+  if(pieChart) pieChart.destroy();
+  pieChart = new Chart(pieCtx, {
+    type:'pie',
+    data:{
+      labels: metrics,
+      datasets:[{ data: sumByMetric }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{ color:'#cbd5e1' } } }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
