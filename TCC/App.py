@@ -4,8 +4,10 @@ import streamlit as st
 import requests
 import os
 
+TOKEN = "3GESW9TDeo7A1Jy2T5s1v8";
+
 st.set_page_config(page_title="Bancos & Investimentos", layout="wide")
-st.title("💸 Smooth Investing")
+st.title("Smooth Investing")
 
 filepath = os.path.join(os.path.dirname(__file__), "bancos_investimentos.csv")
 df = pd.read_csv(filepath)
@@ -53,10 +55,10 @@ with c2:
     fig_pie = px.pie(totals, names="Classe", values="Valor", title="Participação por Classe", height=420)
     st.plotly_chart(fig_pie, use_container_width=True)
 
-st.title("📈 Cotação de Ações — Brapi")
+st.title("Cotação de Ações — Brapi")
 
-ticker = st.text_input("Digite o ticker da ação:", "PETR4")
-headers = {"Authorization": f"Bearer 3GESW9TDeo7A1Jy2T5s1v8"}
+ticker = st.text_input("Digite o ticker da ação:", "MXRF11")
+headers = {"Authorization": f"Bearer TOKEN"}
 
 if st.button("Buscar cotação"):
     url = f"https://brapi.dev/api/quote/{ticker.upper()}"
@@ -82,7 +84,7 @@ if st.button("Buscar cotação"):
     else:
         st.error(f"Erro {response.status_code}: {response.text}")
 
-st.title("📊 Top 5 Ações Brasil")
+st.title("Top 5 Ações Brasil")
 
 TOKEN = "Bearer 3GESW9TDeo7A1Jy2T5s1v8" 
 
@@ -156,4 +158,4 @@ if acoes:
 st.subheader("Tabela de Detalhes")
 st.dataframe(dff.reset_index(drop=True), hide_index=True, use_container_width=True)
 
-st.info("⚠️ Nenhum dado nesse site é real — os dados têm um propósito demonstrativo apenas!")
+st.info("Nenhum dado nesse site é real — os dados têm um propósito demonstrativo apenas!")

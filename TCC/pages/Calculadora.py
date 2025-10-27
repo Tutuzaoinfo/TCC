@@ -51,16 +51,16 @@ def apply_tax_and_inflation(gross, principal, years, inflation_rate=0.0):
     return {"gross": gross, "tax": tax, "net": net, "real_net": real_net, "aliquot": aliquot}
 
 
-st.title("🧮 Calculadora de Investimentos — Renda Fixa & Simulação")
+st.title("Calculadora de Investimentos — Renda Fixa & Simulação")
 st.markdown("---")
 
-st.header("⚙️ Parâmetros Gerais")
+st.header("Parâmetros Gerais")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
     initial_aporte = st.number_input(
-        "💰 Aporte inicial (R$)", 
+        "Aporte inicial (R$)", 
         min_value=0.0, 
         value=10000.0, 
         step=100.0, 
@@ -68,7 +68,7 @@ with col1:
     )
     
     monthly_aporte = st.number_input(
-        "📅 Aporte mensal (R$)", 
+        "Aporte mensal (R$)", 
         min_value=0.0, 
         value=500.0, 
         step=50.0, 
@@ -77,14 +77,14 @@ with col1:
 
 with col2:
     annual_rate_pct = st.number_input(
-        "📈 Taxa anual nominal (%)", 
+        "Taxa anual nominal (%)", 
         value=8.0, 
         step=0.1, 
         format="%.2f"
     )
     
     years = st.slider(
-        "⏱️ Horizonte (anos)", 
+        "Horizonte (anos)", 
         min_value=1, 
         max_value=50, 
         value=10
@@ -92,14 +92,14 @@ with col2:
 
 with col3:
     compounds = st.selectbox(
-        "🔄 Capitalização por ano", 
+        "Capitalização por ano", 
         options=[12, 4, 2, 1], 
         index=0, 
         format_func=lambda x: f"{x}x/ano"
     )
     
     inflation_pct = st.number_input(
-        "📉 Inflação anual estimada (%)", 
+        "Inflação anual estimada (%)", 
         value=3.5, 
         step=0.1, 
         format="%.2f"
@@ -110,7 +110,7 @@ inflation_rate = inflation_pct / 100.0
 
 st.markdown("---")
 
-with st.expander("📋 **Resumo dos Parâmetros Configurados**", expanded=False):
+with st.expander("**Resumo dos Parâmetros Configurados**", expanded=False):
     col1, col2, col3 = st.columns(3)
     col1.metric("Aporte Inicial", f"R$ {initial_aporte:,.2f}")
     col2.metric("Aporte Mensal", f"R$ {monthly_aporte:,.2f}")
@@ -123,10 +123,10 @@ with st.expander("📋 **Resumo dos Parâmetros Configurados**", expanded=False)
 
 st.markdown("---")
 
-st.header("📈 Simulação — Aporte Inicial + Aportes Mensais")
+st.header("Simulação — Aporte Inicial + Aportes Mensais")
 
 if monthly_aporte == 0 and initial_aporte == 0:
-    st.warning("⚠️ Insira pelo menos um aporte inicial ou aporte mensal para simular.")
+    st.warning("Insira pelo menos um aporte inicial ou aporte mensal para simular.")
 else:
     df_sim = compound_with_contributions(initial_aporte, monthly_aporte, annual_rate, years)
     fv_monthly = df_sim.iloc[-1]["Saldo"] if not df_sim.empty else initial_aporte
@@ -135,9 +135,9 @@ else:
     tax_info2 = apply_tax_and_inflation(fv_monthly, total_invested, years, inflation_rate=inflation_rate)
 
     m1, m2, m3 = st.columns(3)
-    m1.metric("💵 Valor final bruto (R$)", f"{fv_monthly:,.2f}")
-    m2.metric("💰 Total investido (R$)", f"{total_invested:,.2f}")
-    m3.metric("✅ Ganho líquido após IR (R$)", f"{tax_info2['net'] - total_invested:,.2f}")
+    m1.metric("Valor final bruto (R$)", f"{fv_monthly:,.2f}")
+    m2.metric("Total investido (R$)", f"{total_invested:,.2f}")
+    m3.metric("Ganho líquido após IR (R$)", f"{tax_info2['net'] - total_invested:,.2f}")
 
     df_sim["Ano"] = ((df_sim["Mes"] - 1) // 12) + 1
     resumo = df_sim.groupby("Ano")["Saldo"].last().reset_index()
@@ -147,7 +147,7 @@ else:
 
     resumo_display = resumo[["Ano", "Total Investido (R$)", "Saldo (R$)", "Ganho Bruto (R$)"]].copy()
 
-    st.subheader("📋 Evolução Anual do Investimento")
+    st.subheader("Evolução Anual do Investimento")
     st.dataframe(resumo_display.style.format({
         "Total Investido (R$)": "R$ {:,.2f}",
         "Saldo (R$)": "R$ {:,.2f}",
@@ -156,4 +156,4 @@ else:
 
 st.markdown("---")
 
-st.info("ℹ️ **Aviso:** Este simulador é apenas ilustrativo e não constitui recomendação de investimento. Sempre consulte um profissional certificado antes de tomar decisões financeiras.")
+st.info("**Aviso:** Este simulador é apenas ilustrativo e não constitui recomendação de investimento. Sempre consulte um profissional certificado antes de tomar decisões financeiras.")
