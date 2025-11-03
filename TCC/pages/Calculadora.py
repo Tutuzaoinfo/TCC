@@ -90,14 +90,7 @@ with col2:
         value=10
     )
 
-with col3:
-    compounds = st.selectbox(
-        "Capitalização por ano", 
-        options=[12, 4, 2, 1], 
-        index=0, 
-        format_func=lambda x: f"{x}x/ano"
-    )
-    
+with col3:    
     inflation_pct = st.number_input(
         "Inflação anual estimada (%)", 
         value=3.5, 
@@ -118,7 +111,6 @@ with st.expander("**Resumo dos Parâmetros Configurados**", expanded=False):
     
     col4, col5, col6 = st.columns(3)
     col4.metric("Horizonte", f"{years} anos")
-    col5.metric("Capitalização", f"{compounds}x/ano")
     col6.metric("Inflação Estimada", f"{inflation_pct:.2f}%")
 
 st.markdown("---")
@@ -156,4 +148,3 @@ else:
 
 st.markdown("---")
 
-st.info("**Aviso:** Este simulador é apenas ilustrativo e não constitui recomendação de investimento. Sempre consulte um profissional certificado antes de tomar decisões financeiras.")

@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 st.set_page_config(page_title="Calculadora HP12C", layout="wide")
-st.title("📊 Calculadora HP12C - Investimentos")
+st.title("Calculadora HP12C - Investimentos")
 
 st.markdown("""
 <style>
@@ -21,11 +21,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-tab1, tab2, tab3, tab4 = st.tabs([
-    "💰 Juros Compostos", 
-    "📈 Valor Futuro/Presente", 
-    "🏦 Parcelas (PMT)",
-    "📊 Taxa Interna de Retorno"
+tab1, tab3 = st.tabs([
+    "Juros Compostos", 
+    "Parcelas (PMT)",
 ])
 
 with tab1:
@@ -77,37 +75,6 @@ with tab1:
         fig.add_trace(go.Scatter(x=meses, y=valores_futuros, name="Valor Total", line=dict(color="green")))
         fig.update_layout(title="Evolução do Investimento", xaxis_title="Meses", yaxis_title="Valor (R$)", height=400)
         st.plotly_chart(fig, use_container_width=True)
-
-with tab2:
-    st.header("Valor Futuro e Valor Presente")
-    st.write("Calcule FV (Valor Futuro) ou PV (Valor Presente)")
-    
-    calc_type = st.radio("O que deseja calcular?", ["Valor Futuro (FV)", "Valor Presente (PV)"], horizontal=True)
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        if calc_type == "Valor Futuro (FV)":
-            pv_vf = st.number_input("Valor Presente (PV)", value=5000.0, step=500.0, format="%.2f", key="pv_vf")
-            taxa_vf = st.number_input("Taxa (% ao período)", value=1.5, step=0.1, format="%.2f", key="taxa_vf")
-            n_vf = st.number_input("Número de Períodos (n)", value=24, step=1, min_value=1, key="n_vf")
-        else:
-            fv_vp = st.number_input("Valor Futuro (FV)", value=10000.0, step=500.0, format="%.2f", key="fv_vp")
-            taxa_vp = st.number_input("Taxa (% ao período)", value=1.5, step=0.1, format="%.2f", key="taxa_vp")
-            n_vp = st.number_input("Número de Períodos (n)", value=24, step=1, min_value=1, key="n_vp")
-    
-    with col2:
-        if st.button("Calcular", type="primary", use_container_width=True, key="calc_fv_pv"):
-            if calc_type == "Valor Futuro (FV)":
-                i = taxa_vf / 100
-                fv = pv_vf * ((1 + i) ** n_vf)
-                st.markdown(f'<div class="big-number">R$ {fv:,.2f}</div>', unsafe_allow_html=True)
-                st.success(f"Seu investimento de R$ {pv_vf:,.2f} valerá R$ {fv:,.2f} após {n_vf} períodos")
-            else:
-                i = taxa_vp / 100
-                pv = fv_vp / ((1 + i) ** n_vp)
-                st.markdown(f'<div class="big-number">R$ {pv:,.2f}</div>', unsafe_allow_html=True)
-                st.success(f"Você precisa investir R$ {pv:,.2f} hoje para ter R$ {fv_vp:,.2f} após {n_vp} períodos")
 
 with tab3:
     st.header("Cálculo de Parcelas (PMT)")
@@ -169,60 +136,4 @@ with tab3:
         
         df_amort = pd.DataFrame(tabela)
         st.dataframe(df_amort, use_container_width=True, height=400)
-
-with tab4:
-    st.header("Taxa Interna de Retorno (TIR)")
-    st.write("Calcule a taxa de retorno de um investimento com múltiplos fluxos de caixa")
-    
-    st.subheader("Fluxos de Caixa")
-    st.info("Valores negativos representam investimentos (saídas). Valores positivos representam retornos (entradas).")
-    
-    col1, col2 = st.columns([2, 1])
-    
-    with col1:
-        num_fluxos = st.number_input("Número de períodos", value=5, min_value=2, max_value=20, step=1)
-        
-        fluxos = []
-        cols = st.columns(min(5, num_fluxos))
-        
-        for i in range(num_fluxos):
-            with cols[i % 5]:
-                valor = st.number_input(
-                    f"Período {i}", 
-                    value=-10000.0 if i == 0 else 3000.0,
-                    step=100.0,
-                    format="%.2f",
-                    key=f"fluxo_{i}"
-                )
-                fluxos.append(valor)
-    
-    with col2:
-        if st.button("Calcular TIR", type="primary", use_container_width=True, key="calc_tir"):
-            try:
-                tir = np.irr(fluxos) * 100
-                
-                st.markdown(f'<div class="big-number">{tir:.2f}%</div>', unsafe_allow_html=True)
-                st.success(f"Taxa Interna de Retorno: {tir:.2f}% ao período")
-                
-                taxas = np.linspace(-5, 20, 100)
-                vpls = []
-                
-                for taxa in taxas:
-                    i = taxa / 100
-                    vpl = sum([fluxo / ((1 + i) ** idx) for idx, fluxo in enumerate(fluxos)])
-                    vpls.append(vpl)
-                
-                fig = go.Figure()
-                fig.add_trace(go.Scatter(x=taxas, y=vpls, name="VPL", line=dict(color="blue")))
-                fig.add_hline(y=0, line_dash="dash", line_color="red")
-                fig.add_vline(x=tir, line_dash="dash", line_color="green", annotation_text=f"TIR = {tir:.2f}%")
-                fig.update_layout(title="Valor Presente Líquido vs Taxa", xaxis_title="Taxa (%)", yaxis_title="VPL (R$)", height=400)
-                st.plotly_chart(fig, use_container_width=True)
-                
-            except:
-                st.error("Não foi possível calcular a TIR. Verifique os fluxos de caixa.")
-        
-        st.info("📌 A TIR é a taxa que faz o VPL = 0")
-
 st.divider()
-st.caption("💡 Calculadora HP12C Financeira | Ferramenta educacional para cálculos de investimentos")

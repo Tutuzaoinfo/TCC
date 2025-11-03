@@ -11,3 +11,9 @@ Sofisa Direto
 
 python -m streamlit run App.py
 python -m streamlit run Calculadora.py
+
+Useall
+Nexcelo
+BE1
+Ema Sistemas
+Narval

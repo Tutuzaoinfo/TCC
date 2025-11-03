@@ -7,7 +7,7 @@ import os
 TOKEN = "3GESW9TDeo7A1Jy2T5s1v8";
 
 st.set_page_config(page_title="Bancos & Investimentos", layout="wide")
-st.title("Smooth Investing")
+st.title("Smooth Invest")
 
 filepath = os.path.join(os.path.dirname(__file__), "bancos_investimentos.csv")
 df = pd.read_csv(filepath)
@@ -45,7 +45,7 @@ with c1:
         color=metric,
         hover_data=metrics,
         title=f"Comparativo — {metric}",
-        height=420,
+        height=400,
     )
     st.plotly_chart(fig_bar, use_container_width=True)
 
@@ -157,5 +157,3 @@ if acoes:
 
 st.subheader("Tabela de Detalhes")
 st.dataframe(dff.reset_index(drop=True), hide_index=True, use_container_width=True)
-
-st.info("Nenhum dado nesse site é real — os dados têm um propósito demonstrativo apenas!")

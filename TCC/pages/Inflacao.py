@@ -4,7 +4,7 @@ import streamlit as st
 import requests
 from datetime import datetime, timedelta
 
-st.set_page_config(page_title="Indicadores BCB", layout="wide", page_icon="📊")
+st.set_page_config(page_title="Indicadores BCB", layout="wide")
 
 st.markdown("""
     <style>
@@ -118,11 +118,11 @@ if df_principal is not None and not df_principal.empty:
     
     with st.expander("Ver Dados Completos"):
         df_show = df_principal.copy()
+        df_show = df_show.sort_values('data', ascending=True)
         df_show['data'] = df_show['data'].dt.strftime('%d/%m/%Y')
         df_show = df_show.rename(
             columns={'data': 'Data', 'valor': f'Valor ({info["unidade"]})'}
         )
-        df_show = df_show.sort_values('Data', ascending=False)
         st.dataframe(df_show, hide_index=True, use_container_width=True)
     
 else:
