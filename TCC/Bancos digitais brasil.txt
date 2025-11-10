@@ -9,4 +9,4 @@ Next
 Neon
 Sofisa Direto
 
-python -m streamlit run Home.py
+python -m streamlit run App.py

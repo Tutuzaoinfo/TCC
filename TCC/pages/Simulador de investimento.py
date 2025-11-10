@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-st.set_page_config(page_title="Calculadora & Simulador — Renda Fixa", layout="wide")
+st.set_page_config(page_title="Simulador de investimentos — Renda Fixa", layout="wide")
 
 def ir_rate_by_days(days):
     if days <= 180:
@@ -50,7 +50,7 @@ def apply_tax_and_inflation(gross, principal, years, inflation_rate=0.0):
     return {"gross": gross, "tax": tax, "net": net, "real_net": real_net, "aliquot": aliquot}
 
 
-st.title("Calculadora de Investimentos — Renda Fixa & Simulação")
+st.title("Simulador de investimentos — Renda Fixa & Simulação")
 st.markdown("---")
 
 st.header("Parâmetros Gerais")

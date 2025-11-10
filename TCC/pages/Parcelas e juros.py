@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
-st.set_page_config(page_title="Calculadora HP12C", layout="wide")
-st.title("Calculadora HP12C - Investimentos")
+st.set_page_config(page_title="Parcelas e juros", layout="wide")
+st.title("Parcelas e juros")
 
 st.markdown("""
 <style>
