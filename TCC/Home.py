@@ -4,7 +4,7 @@ import streamlit as st
 import requests
 import os
 
-TOKEN = "3GESW9TDeo7A1Jy2T5s1v8"
+TOKEN = "3GESW9TDeo7A1Jy2T5s1v8";
 
 st.set_page_config(page_title="Bancos & Investimentos", layout="wide")
 st.title("Smooth Invest")
