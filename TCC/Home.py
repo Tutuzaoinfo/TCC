@@ -12,7 +12,7 @@ st.title("Smooth Invest")
 filepath = os.path.join(os.path.dirname(__file__), "bancos_investimentos.csv")
 df = pd.read_csv(filepath)
     
-metrics = ["Renda Fixa", "Ações", "FIIs", "Câmbio", "ESG", "Crédito"]
+metrics = ["Renda Fixa", "Ações", "FIIs", "Câmbio", "COE", "Crédito"]
 df["Total"] = df[metrics].sum(axis=1)
 
 col1, col2, col3 = st.columns([1, 1, 2])
